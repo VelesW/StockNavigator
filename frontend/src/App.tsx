@@ -1,14 +1,19 @@
-// import { useState } from "react";
-// import reactLogo from "./assets/react.svg"; // Usunięto
-// import viteLogo from "/vite.svg"; // Usunięto
 import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import DefaultPage from "./pages/DefaultPage";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
 
 function App() {
-  // const [count, setCount] = useState(0); // Usunięto
-
   return (
     <>
-      <h1 className="text-4xl text-emerald-500">tekst</h1>
+      <Router>
+        <Routes>
+          <Route path="/" element={<DefaultPage />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+        </Routes>
+      </Router>
     </>
   );
 }
