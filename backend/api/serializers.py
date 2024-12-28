@@ -7,6 +7,16 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = Shareholder
         fields = ['id','username','email','password']
 
+    def create(self, validated_data):
+        print("Validated data:", validated_data)
+
+        user = Shareholder.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data['email'],
+            password=validated_data['password']
+        )
+        return user
+
 class ShareholderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shareholder
@@ -20,7 +30,7 @@ class PortfolioSerializer(serializers.ModelSerializer):
 class SharesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shares
-        fields = ['id', 'symbol', 'name', 'current_price']
+        fields = ['id', 'symbol', 'name', 'exchange', 'asset_type']
 
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:

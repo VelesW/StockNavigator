@@ -3,9 +3,9 @@ from django.urls import path, include
 from api import views
 
 urlpatterns = [
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('register/', views.register, name='register'),
-    path('login/', views.login_view, name='login'),
+    path('login/', views.login, name='token_access'),
+    path('login/refresh/', views.refresh, name='token_refresh'),
     path('shares/', views.shares_list, name='shares_list'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('shares/<str:symbol>/', views.shares_detail, name='shares_detail'),
