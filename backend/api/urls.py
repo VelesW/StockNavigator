@@ -17,4 +17,5 @@ urlpatterns = [
     path('portfolio/details/', views.portfolio_details, name='portfolio_details'),
     path('users/', views.user_list, name='user_list'),
     path('shares/<str:symbol>/details/', views.shares_price_history, name='shares_price_history'),
+    path('profile/details', views.profile_details, name='profile_details')
 ]
