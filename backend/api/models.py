@@ -18,12 +18,13 @@ class Shareholder(AbstractUser):
 
 class Portfolio(models.Model):
     user = models.ForeignKey(Shareholder, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=200)
 
 class Shares(models.Model):
-    symbol = models.CharField(max_length=10, unique=True)
-    name = models.CharField(max_length=100)
-    current_price = models.DecimalField(max_digits=10, decimal_places=2)
+    symbol = models.CharField(max_length=20, unique=True)
+    name = models.CharField(max_length=200)
+    exchange = models.CharField(max_length=50)  
+    asset_type = models.CharField(max_length=20)
 
 class Transactions(models.Model):
     portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
