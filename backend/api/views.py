@@ -1,12 +1,32 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from rest_framework.response import Response
 from django.contrib.auth.decorators import login_required
 from oauth2_provider.decorators import protected_resource
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from .models import Portfolio, Shares, Transactions, Shareholder
+from .serializers import RegisterSerializer, PortfolioSerializer, RegisterSerializer, SharesSerializer, TransactionsSerializer
 
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def register(request):
-    # Logika rejestracji użytkownika
-    return JsonResponse({'message': 'User registered successfully'})
+    serializer = RegisterSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            serializer.data, 
+            status=status.HTTP_201_CREATED
+        )
+    else:
+        print(serializer.errors)
+    return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 def login_view(request):
     # Logika logowania użytkownika
@@ -20,7 +40,6 @@ def shares_list(request):
 
 @protected_resource()
 def dashboard(request):
-    # Logika wyświetlania pulpitu nawigacyjnego
     return JsonResponse({'message': 'Dashboard details'})
 
 @protected_resource()
@@ -34,40 +53,36 @@ def shares_detail(request, symbol):
 
 @protected_resource()
 def buy_shares(request, symbol):
-    # Logika zakupu akcji
     return JsonResponse({'message': f'Shares {symbol} bought successfully'})
 
 @protected_resource()
 def sell_shares(request, symbol):
-    # Logika sprzedaży akcji
     return JsonResponse({'message': f'Shares {symbol} sold successfully'})
 
 @protected_resource()
 def portfolio(request):
-    # Logika przeglądania portfela
     return JsonResponse({'message': 'Portfolio details'})
 
 @protected_resource()
 def transaction_history(request):
-    # Logika przeglądania historii transakcji
     return JsonResponse({'message': 'Transaction history'})
 
 @protected_resource()
 def update_profile(request):
-    # Logika aktualizacji profilu użytkownika
     return JsonResponse({'message': 'Profile updated successfully'})
 
 @protected_resource()
 def portfolio_details(request):
-    # Logika przeglądania szczegółów portfela
     return JsonResponse({'message': 'Portfolio details'})
 
 @protected_resource()
 def user_list(request):
-    # Logika przeglądania listy użytkowników
     return JsonResponse({'message': 'User list'})
 
 @protected_resource()
 def shares_price_history(request, symbol):
-    # Logika przeglądania historii cen akcji
     return JsonResponse({'message': f'Price history for {symbol}'})
+
+@protected_resource
+def profile_details(request):
+    return JsonResponse({'message' : f'User profile details'})

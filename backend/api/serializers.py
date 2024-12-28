@@ -1,6 +1,12 @@
 from rest_framework import serializers
 from .models import Shareholder, Portfolio, Shares, Transactions
 
+class RegisterSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    class Meta:
+        model = Shareholder
+        fields = ['id','username','email','password']
+
 class ShareholderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shareholder
