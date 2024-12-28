@@ -4,7 +4,6 @@ from api import views
 
 urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    path('admin/', admin.site.urls),
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
     path('shares/', views.shares_list, name='shares_list'),
