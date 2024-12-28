@@ -1,10 +1,12 @@
 import { FC } from "react";
+import FormWrapper from "../wrappers/FormWrapper";
+import RegisterForm from "../components/authorization/components/RegisterForm";
 
 const Register: FC = () => {
   return (
-    <div>
-      <h1>register</h1>
-    </div>
+    <FormWrapper>
+      <RegisterForm/>
+    </FormWrapper>
   );
 };
 
