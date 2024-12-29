@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from .models import Portfolio, Shares, Transactions, Shareholder
 from .serializers import RegisterSerializer, PortfolioSerializer, RegisterSerializer, SharesSerializer, TransactionsSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+import requests
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -45,18 +46,31 @@ def shares_list(request):
     data = [{'symbol': shares.symbol, 'name': shares.name, 'exchange': shares.exchange, 'asset_type' : shares.asset_type } for shares in sharess]
     return JsonResponse(data, safe=False)
 
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def dashboard(request):
-    return JsonResponse({'message': 'Dashboard details'})
-
-@permission_classes([IsAuthenticated])
-def shares_detail(request, symbol):
+def concrete_share(request, symbol):
     try:
         shares = Shares.objects.get(symbol=symbol)
-        data = {'symbol': shares.symbol, 'name': shares.name, 'current_price': shares.current_price}
+        data = {'symbol': shares.symbol, 'name': shares.name, 'exchange': shares.exchange, 'asset_type' : shares.asset_type }
         return JsonResponse(data)
     except Shares.DoesNotExist:
         return JsonResponse({'error': 'Shares not found'}, status=404)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def share_details(request, symbol):
+    try:
+        shares = Shares.objects.get(symbol=symbol)
+        url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={shares.symbol}&apikey=demo'
+        r = requests.get(url)
+        data = r.json()
+        return JsonResponse(data)
+    except Shares.DoesNotExist:
+        return JsonResponse({'error': 'Shares not found'}, status=404)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': 'Error fetching data from external API', 'details': str(e)}, status=500)
+    except ValueError:
+        return JsonResponse({'error': 'Error parsing JSON response'}, status=500)
 
 @permission_classes([IsAuthenticated])
 def buy_shares(request, symbol):
