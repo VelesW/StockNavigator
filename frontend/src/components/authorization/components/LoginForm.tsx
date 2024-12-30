@@ -1,53 +1,92 @@
-import AuthHeader from "../utils/AuthHeader"
-import AuthInput from "../utils/AuthInput"
-import AuthButton from "../utils/AuthButton"
-import SwitchAuthOption from "../utils/SwitchAuthOption"
-import { FaLock, FaUser } from "react-icons/fa"
-import { useState } from "react"
+import { FC, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { FaLock, FaUser } from "react-icons/fa";
+import AuthHeader from "../utils/AuthHeader";
+import AuthInput from "../utils/AuthInput";
+import AuthButton from "../utils/AuthButton";
+import SwitchAuthOption from "../utils/SwitchAuthOption";
+import AuthResponse from "../utils/AuthResponse";
 
-const LoginForm = () => {
+interface Response {
+    text: string;
+    color: string;
+}
 
-    const [username,setUsername] = useState<string>("")
-    const [password,setPassword] = useState<string>("")
+const LoginForm: FC = () => {
+    const [username, setUsername] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [response, setResponse] = useState<Response>({ text: "", color: "" });
+    const [responseIsVisible, setResponseIsVisible] = useState<boolean>(false);
+    const navigate = useNavigate();
 
-    const handleLogin = () => {
-        
-    }
+    const updateResponse = (text: string, color: string) => {
+        setResponse({ text, color });
+        setResponseIsVisible(true);
+        setTimeout(() => setResponseIsVisible(false), 3000);
+    };
+
+    const handleLogin = async () => {
+        // updateResponse("","");
+
+        if (!username || !password) {
+            updateResponse("Please fill all fields!", "bg-red-300");
+            return;
+        }
+
+        try {
+            const result = await axios.post("http://localhost:8000/api/login/", {
+                username: username.trim(),
+                password
+            }, {
+                headers: { "Content-Type": "application/json" }
+            });
+            sessionStorage.setItem("access_token", result.data.access);
+            navigate("/main");
+
+        } catch (error) {
+            updateResponse("Bad credentials!", "bg-red-300");
+        }
+    };
 
     return (
-        <form className="rounded-lg w-72 h-96 text-main-text bg-main-gray shadow-[6px_6px_20px_3px_rgba(0,0,0,0.7)] p-5 flex flex-col justify-center items-center font-exo">
-            <AuthHeader 
-                text="Sign in"
-            />
+        <form className="rounded-lg w-72 h-96 bg-main-gray text-main-text shadow-[6px_6px_20px_3px_rgba(0,0,0,0.7)] p-5 flex flex-col justify-center items-center font-exo">
+            <AuthHeader text="Sign in" />
             <AuthInput
                 type="text"
                 value={username}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setUsername(e.target.value);
-                }} 
-                placeholder="Username" 
-                icon={<FaUser/>}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Username"
+                icon={<FaUser />}
             />
-            <AuthInput 
+            <AuthInput
                 type="password"
                 value={password}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    setPassword(e.target.value);
-                }}
-                placeholder="Password" 
-                icon={<FaLock/>}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                icon={<FaLock />}
             />
-            <AuthButton 
+
+            {responseIsVisible && (
+                <AuthResponse
+                    text={response.text}
+                    color={response.color}
+                    isVisible={responseIsVisible}
+                />
+            )}
+
+            <AuthButton
                 action="LOGIN"
-                handleClick={() => handleLogin()}
+                handleClick={handleLogin}
             />
-            <SwitchAuthOption 
-                text="Don't have an account?" 
-                linkName="Sign up" 
-                path = '/register'
+
+            <SwitchAuthOption
+                text="Don't have an account?"
+                linkName="Sign up"
+                path="/register"
             />
         </form>
-    )
-}
+    );
+};
 
-export default LoginForm
+export default LoginForm;
