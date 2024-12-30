@@ -8,9 +8,13 @@ from rest_framework import status
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from .models import Portfolio, Shares, Transactions, Shareholder
-from .serializers import RegisterSerializer, PortfolioSerializer, RegisterSerializer, SharesSerializer, TransactionsSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.core.exceptions import ValidationError
 import requests
+from .serializers import ( 
+    RegisterSerializer, PortfolioSerializer, RegisterSerializer, ShareholderSerializer,
+     SharesSerializer, TransactionsSerializer, DepositSerializer, WithdrawSerializer
+)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -38,6 +42,41 @@ def refresh(request):
 @permission_classes([AllowAny])
 def login(request):
     return TokenObtainPairView.as_view()(request._request)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def deposit(request):
+    try:
+        shareholder = request.user
+    except Shareholder.DoesNotExist:
+        return Response({'error':'Account not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = DepositSerializer(data=request.data)
+    if serializer.is_valid():
+        try:
+            shareholder.deposit(serializer.validated_data['amount'])
+            return Response(ShareholderSerializer(shareholder).data, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def withdrawal(request):
+    try:
+        shareholder = request.user
+    except Shareholder.DoesNotExist:
+        return Response({'error':'Account not found'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = WithdrawSerializer(data=request.data)
+    if serializer.is_valid():
+        try:
+            shareholder.withdraw(serializer.validated_data['amount'])
+            return Response(ShareholderSerializer(shareholder).data, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -80,13 +119,21 @@ def buy_shares(request, symbol):
 def sell_shares(request, symbol):
     return JsonResponse({'message': f'Shares {symbol} sold successfully'})
 
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def portfolio(request):
-    return JsonResponse({'message': 'Portfolio details'})
+    user = request.user
+    portfolios = Portfolio.objects.filter(user=user)
+    serializer = PortfolioSerializer(portfolios, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
+@api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def transaction_history(request):
-    return JsonResponse({'message': 'Transaction history'})
+    user = request.user
+    transactions = Transactions.objects.filter(user=user)
+    serializer = TransactionsSerializer(transactions, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 @permission_classes([IsAuthenticated])
 def update_profile(request):

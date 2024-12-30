@@ -20,12 +20,12 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ShareholderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shareholder
-        fields = ['id', 'first_name', 'last_name', 'email', 'groups', 'user_permissions']
+        fields = ['id', 'first_name', 'last_name', 'email', 'balance']
 
 class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
-        fields = ['id', 'user', 'name']
+        fields = ['id', 'user', 'name', 'share']
 
 class SharesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,4 +35,10 @@ class SharesSerializer(serializers.ModelSerializer):
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
-        fields = ['id', 'portfolio', 'shares', 'transaction_type', 'quantity', 'price_at_transaction', 'date']
+        fields = ['id', 'user', 'share', 'transaction_type', 'quantity', 'price_at_transaction', 'date']
+
+class DepositSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
+
+class WithdrawSerializer(serializers.Serializer):
+    amount = serializers.DecimalField(max_digits=10, decimal_places=2)

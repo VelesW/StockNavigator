@@ -1,27 +1,32 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.core.exceptions import ValidationError
+
 
 class Shareholder(AbstractUser):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
-    # Possible OAuth2 integration
-    # groups = models.ManyToManyField(
-    #     'auth.Group',
-    #     related_name='custom_user_set',
-    #     blank=True
-    # )
-    # user_permissions = models.ManyToManyField(
-    #     'auth.Permission',
-    #     related_name='custom_user_permissions_set',
-    #     blank=True
-    # )
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
+    def deposit(self, amount):
+        if amount <= 0:
+            raise ValidationError("Deposit amount must be positive.")
+        self.balance += amount
+        self.save()
+
+    def withdraw(self, amount):
+        if amount <= 0:
+            raise ValidationError("Withdrawal amount must be positive.")
+        if amount > self.balance:
+            raise ValidationError("Insufficient funds.")
+        self.balance -= amount
+        self.save()
 
 class Shares(models.Model):
     symbol = models.CharField(max_length=20, unique=True)
     name = models.CharField(max_length=200)
-    exchange = models.CharField(max_length=50)  
+    exchange = models.CharField(max_length=50)
     asset_type = models.CharField(max_length=20)
 
 class Portfolio(models.Model):
@@ -30,7 +35,7 @@ class Portfolio(models.Model):
     share = models.ForeignKey(Shares, on_delete=models.CASCADE)
     
 class Transactions(models.Model):
-    portfolio = models.ForeignKey(Portfolio, on_delete=models.CASCADE)
+    user = models.ForeignKey(Shareholder, on_delete=models.CASCADE)
     share = models.ForeignKey(Shares, on_delete=models.CASCADE)
     transaction_type = models.CharField(max_length=4, choices=[('BUY', 'Buy'), ('SELL', 'Sell')])
     quantity = models.PositiveIntegerField()
