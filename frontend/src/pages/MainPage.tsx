@@ -1,9 +1,12 @@
-const MainPage = () => {
-    return (
-        <div>
-            <h1>main</h1>
-        </div>
-    )
-}
+import Marketplace from "../components/Marketplace";
 
-export default MainPage
+const MainPage = () => {
+  return (
+    <div className="w-[100dvw] flex flex-row min-h-screen bg-zinc-900 overflow-x-hidden">
+      <h1>main</h1>
+      <Marketplace />
+    </div>
+  );
+};
+
+export default MainPage;
