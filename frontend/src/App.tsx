@@ -1,9 +1,9 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import DefaultPage from "./pages/DefaultPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import MainPage from './pages/MainPage';
-import PrivateRoute from './routes/PrivateRoute';
+import MainPage from "./pages/MainPage";
+import PrivateRoute from "./routes/PrivateRoute";
 
 function App() {
   return (
