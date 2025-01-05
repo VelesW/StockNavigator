@@ -1,26 +1,18 @@
-# Build the app
-FROM node:18-alpine as build
+# Wybieramy obraz Node.js dla trybu deweloperskiego
+FROM node:18-alpine
 
-# Set working directory and copy package files
+# Ustawiamy katalog roboczy
 WORKDIR /app
+
+# Kopiujemy pliki zależności i instalujemy pakiety
 COPY package.json package-lock.json ./
-
-# Install dependencies and build the project
 RUN npm install
+
+# Kopiujemy resztę kodu źródłowego
 COPY . .
-RUN npm run build
 
-# Serve the app with Nginx
-FROM nginx:alpine
+# Start serwera deweloperskiego
+CMD ["npm", "start"]
 
-# Copy the built files from the previous stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy the Nginx configuration file (optional)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-EXPOSE 80
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+# Otwieramy port 3000
+EXPOSE 3000
