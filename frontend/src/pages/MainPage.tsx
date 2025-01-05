@@ -1,4 +1,4 @@
-import Marketplace from "../components/Marketplace";
+import Marketplace from "../components/marketplace/Marketplace";
 
 const MainPage = () => {
   return (
