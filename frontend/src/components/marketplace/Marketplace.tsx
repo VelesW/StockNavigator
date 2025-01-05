@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
@@ -9,10 +9,19 @@ const Marketplace = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const [shares, setShares] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = shares.slice(indexOfFirstItem, indexOfLastItem);
 
   useEffect(() => {
     getItems();
   }, []);
+
+  const paginate = (pageNumber: number) => {
+    if (pageNumber < 1 || pageNumber > totalPages) return;
+    setCurrentPage(pageNumber);
+  };
 
   const getItems = async () => {
     try {
@@ -22,8 +31,9 @@ const Marketplace = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const limitedShares = res.data.slice(0, 30);
+      const limitedShares = res.data.slice(0, 30); // Możesz dostosować, ile przedmiotów chcesz pobrać
       setShares(limitedShares);
+      setTotalPages(Math.ceil(limitedShares.length / itemsPerPage));
       console.log(limitedShares);
     } catch (error) {
       console.log(error);
@@ -64,7 +74,7 @@ const Marketplace = () => {
             </div>
           </div>
           <div className="flex flex-col">
-            {shares.map((item: any, i) => (
+            {currentItems.map((item: any, i) => (
               <Share
                 key={i}
                 asset_type={item.asset_type}
@@ -73,30 +83,45 @@ const Marketplace = () => {
                 symbol={item.symbol}
               ></Share>
             ))}
-            <div className="flex flex-row justify-between w-full py-4 bg-zinc-900 px-3 rounded-lg">
-              <div className="flex flex-row items-center gap-2">
-                <span>IMG</span>
-                <span className="text-white font-semibold text-sm">
-                  Example
-                </span>
-              </div>
-              <div className="flex gap-8 text-sm">
-                <span className="text-white font-semibold text-sm">1.235</span>
-                <span className="text-white font-semibold text-sm">1.577</span>
-                <span className="text-emerald-500 font-semibold text-sm">
-                  +0.67
-                </span>
-              </div>
-            </div>
           </div>
         </div>
         <div className="flex w-[800px] max-w-[95%] flex-col mt-12">
           <div className="w-full flex items-center justify-center">
-            <button className="text-white py-2 px-2 bg-emerald-500 rounded-lg">
+            <button
+              onClick={() => paginate(currentPage - 1)}
+              disabled={currentPage === 1}
+              className={`text-white py-2 px-2 bg-emerald-500 rounded-lg ${
+                currentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
               <FaChevronLeft />
             </button>
-            <span className="px-4 text-white text-sm">1 2 .. 4</span>
-            <button className="text-white py-2 px-2 bg-emerald-500 rounded-lg">
+
+            <span className="px-4 flex space-x-2">
+              {[...Array(totalPages)].map((_, index) => (
+                <button
+                  key={index + 1}
+                  onClick={() => paginate(index + 1)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === index + 1
+                      ? "bg-emerald-500 text-white"
+                      : "bg-zinc-700 text-zinc-300"
+                  }`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </span>
+
+            <button
+              onClick={() => paginate(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className={`text-white py-2 px-2 bg-emerald-500 rounded-lg ${
+                currentPage === totalPages
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+            >
               <FaChevronRight />
             </button>
           </div>
