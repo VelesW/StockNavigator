@@ -4,6 +4,7 @@ import { FaSearch } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import Share from "./Share";
+import ShareDialog from "./ShareDialog";
 
 const Marketplace = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -13,6 +14,8 @@ const Marketplace = () => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = shares.slice(indexOfFirstItem, indexOfLastItem);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   useEffect(() => {
     getItems();
@@ -31,7 +34,7 @@ const Marketplace = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      const limitedShares = res.data.slice(0, 30); // Możesz dostosować, ile przedmiotów chcesz pobrać
+      const limitedShares = res.data.slice(0, 30);
       setShares(limitedShares);
       setTotalPages(Math.ceil(limitedShares.length / itemsPerPage));
       console.log(limitedShares);
@@ -39,6 +42,47 @@ const Marketplace = () => {
       console.log(error);
     }
   };
+
+  const openDialog = (item: any) => {
+    setSelectedItem(item);
+    setIsDialogOpen(true);
+  };
+
+  const closeDialog = () => {
+    setSelectedItem(null);
+    setIsDialogOpen(false);
+  };
+
+  // 01. symbol
+  // :
+  // "IBM"
+  // 02. open
+  // :
+  // "220.5500"
+  // 03. high
+  // :
+  // "223.6600"
+  // 04. low
+  // :
+  // "220.5500"
+  // 05. price
+  // :
+  // "222.6500"
+  // 06. volume
+  // :
+  // "3873578"
+  // 07. latest trading day
+  // :
+  // "2025-01-03"
+  // 08. previous close
+  // :
+  // "219.9400"
+  // 09. change
+  // :
+  // "2.7100"
+  // 10. change percent
+  // :
+  // "1.2322%"
 
   return (
     <div className="w-full flex flex-col">
@@ -68,9 +112,9 @@ const Marketplace = () => {
               <span>NAME</span>
             </div>
             <div className="flex gap-8">
-              <span>SELL</span>
-              <span>BUY</span>
-              <span>INCREASE</span>
+              <span className="text-center">TYPE</span>
+              <span className="text-center">EXCHANGE</span>
+              <span className="text-center">SYMBOL</span>
             </div>
           </div>
           <div className="flex flex-col">
@@ -81,6 +125,8 @@ const Marketplace = () => {
                 exchange={item.exchange}
                 name={item.name}
                 symbol={item.symbol}
+                containerClass="even:bg-zinc-900 rounded-xl"
+                onClick={() => openDialog(item)}
               ></Share>
             ))}
           </div>
@@ -127,6 +173,9 @@ const Marketplace = () => {
           </div>
         </div>
       </div>
+      {isDialogOpen && (
+        <ShareDialog item={selectedItem} onClose={closeDialog} />
+      )}
     </div>
   );
 };

@@ -1,25 +1,48 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
+import { TbPigMoney } from "react-icons/tb";
 
 interface ShareProps {
   asset_type: string;
   exchange: string;
   name: string;
   symbol: string;
+  containerClass: string;
+  onClick: () => void;
 }
 
-const Share: FC<ShareProps> = ({ asset_type, exchange, name, symbol }) => {
+const Share: FC<ShareProps> = ({
+  asset_type,
+  exchange,
+  name,
+  symbol,
+  containerClass,
+  onClick,
+}) => {
   return (
-    <div className="flex flex-row justify-between w-full py-4 px-3">
-      <div className="flex flex-row items-center gap-2">
-        <span>IMG</span>
-        <span className="text-white font-semibold text-sm">{name}</span>
+    <>
+      <div
+        className={`flex flex-row justify-between w-full py-4 px-3 cursor-pointer ${containerClass}`}
+        onClick={onClick}
+      >
+        <div className="flex flex-row items-center gap-2">
+          <span>
+            <TbPigMoney size={24} className="text-emerald-500" />
+          </span>
+          <span className="text-white font-semibold text-sm">{name}</span>
+        </div>
+        <div className="flex flex-row gap-8 text-sm">
+          <span className="flex-1 text-white font-semibold text-sm">
+            {asset_type}
+          </span>
+          <span className="flex-1 text-white font-semibold text-sm">
+            {exchange}
+          </span>
+          <span className="flex-1 text-white font-semibold text-sm">
+            {symbol}
+          </span>
+        </div>
       </div>
-      <div className="flex gap-8 text-sm">
-        <span className="text-white font-semibold text-sm">1.235</span>
-        <span className="text-white font-semibold text-sm">1.577</span>
-        <span className="text-emerald-500 font-semibold text-sm">+0.67</span>
-      </div>
-    </div>
+    </>
   );
 };
 
