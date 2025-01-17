@@ -10,6 +10,7 @@ from django.shortcuts import get_object_or_404
 from .models import Portfolio, Shares, Transactions, Shareholder
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from django.core.exceptions import ValidationError
+from decimal import Decimal
 import requests
 from .serializers import ( 
     RegisterSerializer, PortfolioSerializer, RegisterSerializer, ShareholderSerializer,
@@ -111,13 +112,102 @@ def share_details(request, symbol):
     except ValueError:
         return JsonResponse({'error': 'Error parsing JSON response'}, status=500)
 
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
 @permission_classes([IsAuthenticated])
 def buy_shares(request, symbol):
-    return JsonResponse({'message': f'Shares {symbol} bought successfully'})
+    try:
+        shareholder = request.user
+        # Fetch current price of the shares from the external API
+        url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey=demo'
+        r = requests.get(url)
+        data = r.json()
+        current_price = float(data['Global Quote']['05. price'])  # Extract current price
+        symbol = data['Global Quote']['01. symbol']
+        share = Shares.objects.get(symbol=symbol)
 
+        
+        # Get the amount to buy from the request data
+        amount_to_buy = request.data.get('amount', 0)
+        total_cost = Decimal(current_price) * Decimal(amount_to_buy)
+        
+        # Check if the shareholder has enough balance
+        if shareholder.balance >= total_cost:
+            shareholder.withdraw(total_cost)  # Deduct the cost from the balance
+            
+            # Save transaction details to the Transactions table
+            transaction = Transactions(
+                user=shareholder,
+                symbol=symbol,
+                transaction_type='BUY',
+                quantity=amount_to_buy,
+                price_at_transaction=current_price,
+                total_cost=total_cost,
+            )
+            transaction.save()  # Save the transaction to the database
+            
+            # Update the Portfolio table
+            portfolio, created = Portfolio.objects.get_or_create(user=shareholder, share=share)
+            portfolio.volume += amount_to_buy  # Update the number of shares
+            portfolio.save()  # Save the updated portfolio
+            
+            return JsonResponse({'message': f'Shares {symbol} bought successfully', 'total_cost': total_cost})
+        else:
+            return JsonResponse({'error': 'Insufficient balance'}, status=400)
+    except Shares.DoesNotExist:
+        return JsonResponse({'error': 'Shares not found'}, status=404)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': 'Error fetching data from external API', 'details': str(e)}, status=500)
+    except ValueError:
+        return JsonResponse({'error': 'Error parsing JSON response'}, status=500)
+
+@api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def sell_shares(request, symbol):
-    return JsonResponse({'message': f'Shares {symbol} sold successfully'})
+    try:
+        shareholder = request.user
+        shares = Shares.objects.get(symbol=symbol)
+        
+        amount_to_sell = request.data.get('amount', 0)
+        portfolio = Portfolio.objects.get(user=shareholder, share=shares)
+        
+        if portfolio.volume >= amount_to_sell:
+            url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={symbol}&apikey=demo'
+            r = requests.get(url)
+            data = r.json()
+            current_price = float(data['Global Quote']['05. price'])
+            
+            # Update the portfolio by deducting the sold shares
+            portfolio.volume -= amount_to_sell
+            portfolio.save()
+            total_earnings = Decimal(amount_to_sell) * Decimal(current_price)
+            
+            # Save transaction details to the Transactions table
+            transaction = Transactions(
+                user=shareholder,
+                symbol=symbol,
+                transaction_type='SELL',
+                quantity=amount_to_sell,
+                price_at_transaction=current_price,
+                total_cost=total_earnings
+            )
+            transaction.save()
+            
+            return JsonResponse({'message': f'Shares {symbol} sold successfully', 'earnings': total_earnings})
+        else:
+            return JsonResponse({'error': 'Insufficient shares in portfolio'}, status=400)
+    except Shares.DoesNotExist:
+        return JsonResponse({'error': 'Shares not found'}, status=404)
+    except Portfolio.DoesNotExist:
+        return JsonResponse({'error': 'No shares found in portfolio'}, status=404)
+    except requests.exceptions.RequestException as e:
+        return JsonResponse({'error': 'Error fetching data from external API', 'details': str(e)}, status=500)
+    except ValueError:
+        return JsonResponse({'error': 'Error parsing JSON response'}, status=500)
+
+@permission_classes([IsAuthenticated])
+def shares_profit(request, symbol):
+    pass
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
