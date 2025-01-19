@@ -181,6 +181,7 @@ def sell_shares(request, symbol):
             portfolio.volume -= amount_to_sell
             portfolio.save()
             total_earnings = Decimal(amount_to_sell) * Decimal(current_price)
+            shareholder.balance += total_earnings
             
             # Save transaction details to the Transactions table
             transaction = Transactions(
@@ -241,6 +242,18 @@ def user_list(request):
 def shares_price_history(request, symbol):
     return JsonResponse({'message': f'Price history for {symbol}'})
 
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def profile_details(request):
-    return JsonResponse({'message' : f'User profile details'})
+        shareholder = get_object_or_404(Shareholder, id=request.user.id)
+    
+        response_data = {
+            'id': shareholder.id,
+            'username': shareholder.username,
+            'first_name': shareholder.first_name,
+            'last_name': shareholder.last_name,
+            'email': shareholder.email,
+            'balance': shareholder.balance
+        }
+        
+        return JsonResponse(response_data)
