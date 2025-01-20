@@ -133,7 +133,7 @@ def buy_shares(request, symbol):
         
         # Check if the shareholder has enough balance
         if shareholder.balance >= total_cost:
-            shareholder.withdraw(total_cost)  # Deduct the cost from the balance
+            shareholder.withdraw(total_cost) 
             
             # Save transaction details to the Transactions table
             transaction = Transactions(
@@ -181,7 +181,8 @@ def sell_shares(request, symbol):
             portfolio.volume -= amount_to_sell
             portfolio.save()
             total_earnings = Decimal(amount_to_sell) * Decimal(current_price)
-            shareholder.balance += total_earnings
+            if total_earnings > 0: 
+                shareholder.deposit(total_earnings)
             
             # Save transaction details to the Transactions table
             transaction = Transactions(
