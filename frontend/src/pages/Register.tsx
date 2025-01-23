@@ -1,6 +1,6 @@
 import { FC } from "react";
 import FormWrapper from "../wrappers/FormWrapper";
-import RegisterForm from "../components/authorization/components/RegisterForm";
+import RegisterForm from "../components/authorization/main-components/RegisterForm";
 
 const Register: FC = () => {
   return (
