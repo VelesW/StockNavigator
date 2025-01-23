@@ -1,5 +1,4 @@
-import React from "react";
-import TestProfilePicture from "../../../photos/download.png"; // Adjust path if necessary
+import TestProfilePicture from "../../../photos/download.png"; 
 
 const LogoPart = () => {
   return (

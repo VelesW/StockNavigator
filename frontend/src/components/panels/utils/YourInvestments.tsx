@@ -64,8 +64,6 @@ const YourInvestments = () => {
         }}>
       <p className="text-xl font-semibold text-white">Your Investments</p>
       <MoneyDetails text="Balance" amount={1234} />
-
-      {/* Wrapper for scrollable container */}
       <div className="flex flex-col h-full overflow-y-auto space-y-4 pr-2">
         {investments.map((investment, index) => (
           <div
@@ -82,8 +80,6 @@ const YourInvestments = () => {
                 {investment.change < 0 ? `-${Math.abs(investment.change)}` : `+${investment.change}`}
               </p>
             </div>
-
-            {/* Cryptocurrency bought and current value display */}
             <div className="flex justify-between items-center text-sm">
               <p>
                 <span className="font-medium">{investment.quantity} {investment.name}</span> @{" "}
@@ -93,8 +89,6 @@ const YourInvestments = () => {
                 <span className="font-medium">{investment.quantity * investment.currentPrice}</span>
               </p>
             </div>
-            
-            {/* Value difference */}
             <div className="text-sm">
               <p
                 className={`${
