@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-const DepositModalContent: React.FC<{ onSubmit: (amount: number) => void }> = ({ onSubmit }) => {
+const DepositModalContent: React.FC<{ onSubmit: (amount: number) => void, onClose: () => void }> = ({ onSubmit, onClose }) => {
   const [amount, setAmount] = useState<number | "">("");
 
   const handleSubmit = () => {
@@ -31,7 +31,7 @@ const DepositModalContent: React.FC<{ onSubmit: (amount: number) => void }> = ({
         </button>
         <button
           className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-gray-500"
-          onClick={() => setAmount("")}
+          onClick={() => onClose()}
         >
           Cancel
         </button>

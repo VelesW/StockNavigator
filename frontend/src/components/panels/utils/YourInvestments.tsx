@@ -5,9 +5,9 @@ const investments = [
   {
     name: "BTC",
     quantity: 1.25,
-    buyPrice: 100000,  // Buy price for each coin
-    currentPrice: 90000, // Current price per coin
-    change: -10000, // Difference from buy price
+    buyPrice: 100000,
+    currentPrice: 90000,
+    change: -10000,
   },
   {
     name: "ETH",
@@ -37,65 +37,65 @@ const investments = [
     currentPrice: 1.3,
     change: 0.3,
   },
-  {
-    name: "XRP",
-    quantity: 50,
-    buyPrice: 1,
-    currentPrice: 1.3,
-    change: 0.3,
-  },
-  {
-    name: "XRP",
-    quantity: 50,
-    buyPrice: 1,
-    currentPrice: 1.3,
-    change: 0.3,
-  },
 ];
 
-const YourInvestments = () => {
+const YourInvestments: FC = () => {
   return (
-    <div 
-        className="flex h-full flex-1 flex-col space-y-4 overflow-y-auto" 
-        style={{
-            overflowY: "auto",
-            scrollbarWidth: "thin",
-            scrollbarColor: "#4b5563 #2c2f35",
-        }}>
-      <p className="text-xl font-semibold text-white">Your Investments</p>
-      <MoneyDetails text="Balance" amount={1234} />
-      <div className="flex flex-col h-full overflow-y-auto space-y-4 pr-2">
+    <div
+      className="flex flex-col space-y-6 h-full flex-1 bg-zinc-900 text-white p-2 rounded-lg shadow-lg overflow-y-auto"
+      style={{
+        scrollbarWidth: "thin",
+        scrollbarColor: "#4b5563 #2c2f35",
+      }}
+    >
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl font-bold flex justify-center pb-2">Your Investments</h2>
+        <MoneyDetails text="Total Balance" amount={1234} />
+      </div>
+
+      {/* Investments List */}
+      <div className="space-y-4">
         {investments.map((investment, index) => (
           <div
             key={index}
-            className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col space-y-3"
+            className="bg-zinc-800 rounded-xl shadow-md p-4 space-y-3 transform hover:scale-[1.02] transition-transform duration-200"
           >
+            {/* Investment Header */}
             <div className="flex justify-between items-center">
-              <p className="text-white font-semibold text-lg">{investment.name}</p>
+              <p className="text-lg font-medium">{investment.name}</p>
               <p
                 className={`${
-                  investment.change > 0 ? "text-green-500" : "text-red-500"
+                  investment.change >= 0 ? "text-green-400" : "text-red-400"
                 } font-semibold`}
               >
-                {investment.change < 0 ? `-${Math.abs(investment.change)}` : `+${investment.change}`}
+                {investment.change >= 0
+                  ? `+${investment.change.toFixed(2)}`
+                  : `${investment.change.toFixed(2)}`}
               </p>
             </div>
+
+            {/* Quantity and Value */}
+            <div className="flex justify-between text-sm text-gray-300">
+              <p>
+                <span className="font-medium">
+                  {investment.quantity.toFixed(2)} {investment.name}
+                </span>{" "}
+                @ {investment.buyPrice.toLocaleString()}
+              </p>
+              <p>
+                <span className="font-semibold">
+                  ${(investment.quantity * investment.currentPrice).toLocaleString()}
+                </span>
+              </p>
+            </div>
+
+            {/* Buy vs. Current Price */}
             <div className="flex justify-between items-center text-sm">
-              <p>
-                <span className="font-medium">{investment.quantity} {investment.name}</span> @{" "}
-                <span className="font-medium">{investment.buyPrice}</span>
-              </p>
-              <p>
-                <span className="font-medium">{investment.quantity * investment.currentPrice}</span>
-              </p>
-            </div>
-            <div className="text-sm">
-              <p
-                className={`${
-                  investment.change < 0 ? "text-red-500" : "text-green-500"
-                } font-semibold`}
-              >
-              </p>
+              <p className="text-gray-400">Buy Price:</p>
+              <p>${investment.buyPrice.toLocaleString()}</p>
+              <p className="text-gray-400">Current Price:</p>
+              <p>${investment.currentPrice.toLocaleString()}</p>
             </div>
           </div>
         ))}

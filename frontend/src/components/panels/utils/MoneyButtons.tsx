@@ -1,38 +1,47 @@
-import Modal from "../../modals/modal"
+import Modal from "../../modals/modal";
 import { useState } from "react";
 import WithdrawModalContent from "../../modals/widthrawModelContent";
 import DepositModalContent from "../../modals/depositModelContent";
 
 const MoneyButtons = () => {
-    
-    const [activeModal, setActiveModal] = useState<"withdraw" | "deposit" | null>(null);
+  const [activeModal, setActiveModal] = useState<"withdraw" | "deposit" | null>(null);
 
-    const handleWithdraw = (amount: number) => {
-        console.log(`Withdrew $${amount}`);
-        setActiveModal(null);
-    };
+  const handleWithdraw = (amount: number) => {
+    console.log(`Withdrew $${amount}`);
+    setActiveModal(null);
+  };
 
-    const handleDeposit = (amount: number) => {
-        console.log(`Deposited $${amount}`);
-        setActiveModal(null);
-    };
-    return (
-        <div className="flex w-full justify-between gap-[5px]">
-            <button onClick={() => setActiveModal("deposit")} className="bg-blue-500 text-white font-semibold py-[10px] px-[20px] rounded-lg hover:bg-blue-600 transition-all duration-200 ease-in-out">
-                Deposit
-            </button>
-            <button onClick={() => setActiveModal("withdraw")} className="bg-red-500 text-white font-semibold py-[10px] px-[20px] rounded-lg hover:bg-red-600 transition-all duration-200 ease-in-out">
-                Withdraw
-            </button>
-            <Modal isOpen={activeModal === "withdraw"} onClose={() => setActiveModal(null)}>
-            <   WithdrawModalContent onSubmit={handleWithdraw} />
-            </Modal>
+  const handleDeposit = (amount: number) => {
+    console.log(`Deposited $${amount}`);
+    setActiveModal(null);
+  };
 
-            <Modal isOpen={activeModal === "deposit"} onClose={() => setActiveModal(null)}>
-                <DepositModalContent onSubmit={handleDeposit} />
-            </Modal>
-        </div>
-    )
-}
+  const onClose = () => {
+    setActiveModal(null);
+  };
 
-export default MoneyButtons
+  return (
+    <div className="flex justify-between gap-4">
+      <button
+        onClick={() => setActiveModal("deposit")}
+        className="w-full bg-gradient-to-r from-green-500 to-green-700 text-white font-bold py-3 rounded-xl shadow-lg hover:from-green-600 hover:to-green-800 transition-transform transform hover:scale-105 focus:ring-4 focus:ring-green-900 focus:outline-none"
+      >
+        Deposit
+      </button>
+      <button
+        onClick={() => setActiveModal("withdraw")}
+        className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-bold py-3 rounded-xl shadow-lg hover:from-red-600 hover:to-red-800 transition-transform transform hover:scale-105 focus:ring-4 focus:ring-red-900 focus:outline-none"
+      >
+        Withdraw
+      </button>
+      <Modal isOpen={activeModal === "withdraw"} onClose={onClose}>
+        <WithdrawModalContent onSubmit={handleWithdraw} onClose={onClose} />
+      </Modal>
+      <Modal isOpen={activeModal === "deposit"} onClose={onClose}>
+        <DepositModalContent onSubmit={handleDeposit} onClose={onClose} />
+      </Modal>
+    </div>
+  );
+};
+
+export default MoneyButtons;
