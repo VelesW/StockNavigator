@@ -6,6 +6,8 @@ class ApiConfig(AppConfig):
     name = 'api'  # The name of the app
 
     def ready(self):
-        from .fetch_shares import fetch_and_store_stock_data
-        post_migrate.connect(fetch_and_store_stock_data)
+        # WARNING: Disable fetch for developement
+        # from .fetch_shares import fetch_and_store_stock_data
+        # post_migrate.connect(fetch_and_store_stock_data)
+        pass
 
