@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
 from api import views
+from .swagger import schema_view
+
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -20,4 +22,7 @@ urlpatterns = [
     path('profile/update/', views.update_profile, name='update_profile'),
     path('profile/details/', views.profile_details, name='profile_details'),
     path('users/', views.user_list, name='user_list'),
+
+    # documentation endpoint
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui')
 ]
