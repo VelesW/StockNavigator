@@ -5,8 +5,9 @@ import MoneyButtons from "../utils/MoneyButtons";
 import MoneyDetails from "../utils/MoneyDetails";
 import YourInvestments from "../utils/YourInvestments";
 import { UserDetails } from "../../../interfaces/interfaces";
+import { PanelsProps } from "../../../pages/MainPage";
 
-const baseUser: UserDetails = {
+export const baseUser: UserDetails = {
   balance: 0,
   email: "",
   first_name: "",
@@ -15,8 +16,7 @@ const baseUser: UserDetails = {
   username: "",
 };
 
-const LeftPanel = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails>(baseUser);
+const LeftPanel: FC<PanelsProps> = ({ userDetails, setUserDetails }) => {
   const [balance, setBalance] = useState<number>(baseUser.balance);
 
   useEffect(() => {

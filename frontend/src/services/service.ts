@@ -1,5 +1,5 @@
 import sendRequest from "./sendRequest";
-import { UserDetails } from "../components/panels/main-components/LeftPanel";
+import { UserDetails } from "../interfaces/interfaces";
 
 class MainService {
   getUserShares() {

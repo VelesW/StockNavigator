@@ -2,7 +2,7 @@ import Marketplace from "../components/marketplace/Marketplace";
 import LeftPanel from "../components/panels/main-components/LeftPanel";
 import { useState } from "react";
 import { baseUser } from "../components/panels/main-components/LeftPanel";
-import { UserDetails } from "../components/panels/main-components/LeftPanel";
+import { UserDetails } from "../interfaces/interfaces";
 
 export interface PanelsProps {
   userDetails: UserDetails;
