@@ -257,8 +257,8 @@ def shares_profit(request, symbol):
 @permission_classes([IsAuthenticated])
 def portfolio(request):
     user = request.user
-    portfolios = Portfolio.objects.filter(user=user)
-    serializer = PortfolioSerializer(portfolios, many=True)
+    portfolio = Portfolio.objects.filter(user=user)
+    serializer = PortfolioSerializer(portfolio, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
