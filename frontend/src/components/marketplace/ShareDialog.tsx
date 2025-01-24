@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
-import { FaMinus } from "react-icons/fa";
-import { FaPlus } from "react-icons/fa6";
+import { FaMinus, FaPlus } from "react-icons/fa";
+import mainService from "../../services/service.ts";
 import axios from "axios";
 import {
   GlobalQuote,
   ShareDialogProps,
   ChartConfig,
+  UserDetails,
 } from "../../interfaces/interfaces.ts";
 import {
   Chart as ChartJS,
@@ -30,10 +31,38 @@ ChartJS.register(
   Legend
 );
 
+const baseUser: UserDetails = {
+  balance: 0,
+  email: "",
+  first_name: "",
+  id: 0,
+  last_name: "",
+  username: "",
+};
+
+interface BuyShareResponse {
+  success: boolean;
+  total_cost: number;
+}
+
 const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
   const [counter, setCounter] = useState(0);
   const [shareDetails, setShareDetails] = useState<GlobalQuote | null>(null);
   const [chartConfig, setChartConfig] = useState<ChartConfig | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails>(baseUser);
+  const [balance, setBalance] = useState<number>(baseUser.balance);
+
+  useEffect(() => {
+    mainService
+      .getUserData()
+      .then((data) => {
+        setUserDetails(data);
+        setBalance(data.balance);
+      })
+      .catch((err) => {
+        console.error("Error fetching user data:", err);
+      });
+  }, []);
 
   useEffect(() => {
     getShareDetails();
@@ -123,10 +152,28 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
     return { data, options };
   };
 
-  const handleBgClick = (e: any) => {
+  const handleBgClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
+  };
+
+  const buySingleShare = (amount: number, symbol: string) => {
+    mainService
+      .buyShare(symbol, amount)
+      .then((data: BuyShareResponse) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const sellShare = (amount: number, symbol: string) => {
+    mainService
+      .sellShare(symbol, amount)
+      .then((data: BuyShareResponse) => {
+        console.log(data);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -146,7 +193,10 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
           <h3 className="text-zinc-500">{item.symbol}</h3>
         </div>
         <div className="flex flex-row gap-4 mt-4 items-center">
-          <button className="px-8 py-1 text-zinc-200 text-sm border-[1px] border-zinc-500 rounded-lg font-semibold">
+          <button
+            className="px-8 py-1 text-zinc-200 text-sm border-[1px] border-zinc-500 rounded-lg font-semibold"
+            onClick={() => buySingleShare(counter, item.symbol)}
+          >
             BUY
           </button>
           <div className="flex flex-row">
@@ -166,7 +216,10 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
               <FaPlus size={18} />
             </button>
           </div>
-          <button className="px-8 py-1 text-white bg-emerald-500 text-sm border-[1px] border-emerald-500 rounded-lg font-semibold">
+          <button
+            className="px-8 py-1 text-white bg-emerald-500 text-sm border-[1px] border-emerald-500 rounded-lg font-semibold"
+            onClick={() => sellShare(counter, item.symbol)}
+          >
             SELL
           </button>
         </div>

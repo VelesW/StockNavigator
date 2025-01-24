@@ -22,15 +22,19 @@ class ShareholderSerializer(serializers.ModelSerializer):
         model = Shareholder
         fields = ['id', 'first_name', 'last_name', 'email', 'balance']
 
-class PortfolioSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Portfolio
-        fields = '__all__'
 
 class SharesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shares
         fields = ['id', 'symbol', 'name', 'exchange', 'asset_type']
+
+class PortfolioSerializer(serializers.ModelSerializer):
+    user = ShareholderSerializer()
+    share = SharesSerializer()
+    
+    class Meta:
+        model = Portfolio
+        fields = ['user', 'share', 'volume']
 
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:

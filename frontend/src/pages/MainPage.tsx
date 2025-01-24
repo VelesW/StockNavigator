@@ -10,11 +10,11 @@ export interface PanelsProps {
 }
 
 const MainPage = () => {
-  const [userDetails, setUserDetails] = useState<UserDetails>(baseUser)
+  const [userDetails, setUserDetails] = useState<UserDetails>(baseUser);
   return (
     <div className="w-[100dvw] h-screen p-2 flex max-h-screen flex-row bg-zinc-900 overflow-x-hidden">
-      <LeftPanel userDetails={userDetails} setUserDetails={setUserDetails}/>
-      <Marketplace userDetails={userDetails} setUserDetails={setUserDetails}/>
+      <LeftPanel userDetails={userDetails} setUserDetails={setUserDetails} />
+      <Marketplace userDetails={userDetails} setUserDetails={setUserDetails} />
     </div>
   );
 };
