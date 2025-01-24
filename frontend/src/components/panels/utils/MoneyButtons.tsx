@@ -2,7 +2,6 @@ import Modal from "../../modals/modal";
 import { FC, useState } from "react";
 import WithdrawModalContent from "../../modals/widthrawModelContent";
 import DepositModalContent from "../../modals/depositModelContent";
-import sendRequest from "../../../services/sendRequest";
 import mainService from "../../../services/service";
 
 interface MoneyButtonsProps {

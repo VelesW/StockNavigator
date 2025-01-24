@@ -1,13 +1,20 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, FC } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
 import Share from "./Share";
 import ShareDialog from "./ShareDialog";
+import Modal from "../modals/modal";
+import UserForm from "../modals/UserModal";
+import mainService from "../../services/service";
+import { baseUser, UserDetails} from "../panels/main-components/LeftPanel";
+import { useNavigate } from "react-router-dom";
+import { PanelsProps } from "../../pages/MainPage";
 
-const Marketplace = () => {
+const Marketplace: FC<PanelsProps> = ({userDetails, setUserDetails}) => {
   const [currentPage, setCurrentPage] = useState(1);
+  const naviagte = useNavigate()
   const itemsPerPage = 8;
   const [shares, setShares] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -16,7 +23,28 @@ const Marketplace = () => {
   const currentItems = shares.slice(indexOfFirstItem, indexOfLastItem);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [isUserModalActive, setIsUserModalActive] = useState<boolean>(false)
+  const onClose = () => {
+    setIsUserModalActive(false)
+  }
 
+  const logout = () => {
+    sessionStorage.clear()
+    naviagte("/")
+  }
+  
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const data = await mainService.getUserData();
+      
+      if (JSON.stringify(data) !== JSON.stringify(userDetails)) {
+        setUserDetails(data);
+      }
+    };
+  
+    fetchUserData();
+  }, [userDetails]);
+  
   useEffect(() => {
     getItems();
   }, []);
@@ -69,9 +97,12 @@ const Marketplace = () => {
         <a href="/" className="text-sm text-white font-semibold">
           Marketplace
         </a>
-        <a href="/" className="text-sm text-white font-semibold">
+        <button className="text-sm text-white font-semibold" onClick={() => setIsUserModalActive(true)}>
           Profile
-        </a>
+        </button>
+        <button className="text-sm text-white font-semibold" onClick={() => logout()}>
+          Logout
+        </button>
       </div>
       <div className="mt-4 bg-zinc-800 w-full h-full flex flex-col items-center py-16 ring-1 ring-inset ring-gray-500/40">
         <div className="flex w-full max-w-[95%] flex-col">
@@ -142,6 +173,11 @@ const Marketplace = () => {
       </div>
       {isDialogOpen && (
         <ShareDialog item={selectedItem} onClose={closeDialog} />
+      )}
+      {isUserModalActive && (
+        <Modal isOpen={isUserModalActive} onClose={onClose}>
+          <UserForm userDetails={userDetails} setUserDetails={setUserDetails} onClose={onClose} />
+        </Modal>
       )}
     </div>
   );
