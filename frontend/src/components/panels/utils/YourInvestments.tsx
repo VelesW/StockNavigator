@@ -1,6 +1,5 @@
 import { FC, useEffect } from "react";
 import MoneyDetails from "./MoneyDetails";
-import sendRequest from "../../../services/sendRequest";
 import mainService from "../../../services/service";
 import { useState } from "react";
 

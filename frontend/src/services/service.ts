@@ -1,5 +1,6 @@
 import { useState } from "react";
 import sendRequest from "./sendRequest";
+import { UserDetails } from "../components/panels/main-components/LeftPanel";
 
 class MainService {
     getUserShares() {
@@ -22,6 +23,18 @@ class MainService {
         const method = "POST"
         const requestBody = {
             amount: amount
+        }
+        return sendRequest(path,method,requestBody)
+    }
+
+    editUserData(userDetails: UserDetails) {
+        const path = "api/profile/update/"
+        const method = "POST"
+        const requestBody = {
+            first_name: userDetails.first_name,
+            last_name: userDetails.last_name,
+            email: userDetails.email,
+            username: userDetails.username
         }
         return sendRequest(path,method,requestBody)
     }
