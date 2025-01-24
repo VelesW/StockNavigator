@@ -1,33 +1,35 @@
-import axios, { Method } from "axios";
+import axios, { Method } from 'axios';
 
-async function sendRequest<T>(
-  path: string,
-  method: Method = "GET",
-  token: string,
-  data: any = null
-): Promise<T> {
-  const url = "http://localhost:8000/" + path
+// Type definition for the request data and function return type
+interface RequestData {
+  [key: string]: any; // Object to represent data being sent in the request body
+}
+
+const sendRequest = async (
+  url: string,
+  method: Method,
+  data: RequestData | null = null,
+): Promise<any> => {
+  
   try {
     const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      "Authorization": `Bearer ${sessionStorage.getItem("access_token")}`,
+      'Content-Type': 'application/json',
     };
 
     const response = await axios({
-      url,
-      method,
-      headers,
-      data,
+      url: `http://localhost:8000/${url}`,
+      method: method,
+      headers: headers,
+      data: data, // Sending data for methods like POST, PUT
     });
-    
+
+    // Return response data (you can type it further based on the structure)
     return response.data;
   } catch (error: any) {
-    console.error("Request failed:", error.message);
-    if (error.response) {
-      console.error("Error details:", error.response.data);
-    }
-    throw new Error(error.response?.data?.message || "An unexpected error occurred");
+    // Handle any errors by printing the error message or response
+    console.error(`Error with ${method} request to ${url}:`, error.response || error.message);
+    throw error;
   }
-}
-
-export default sendRequest;
+};
+export default sendRequest

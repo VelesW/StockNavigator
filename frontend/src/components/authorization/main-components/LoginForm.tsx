@@ -42,6 +42,7 @@ const LoginForm: FC = () => {
                 headers: { "Content-Type": "application/json" }
             });
             sessionStorage.setItem("access_token", result.data.access);
+            sessionStorage.setItem("userId", result.data.id)
             navigate("/main");
 
         } catch (error) {
