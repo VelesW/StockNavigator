@@ -1,5 +1,8 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import MoneyDetails from "./MoneyDetails";
+import sendRequest from "../../../services/sendRequest";
+import mainService from "../../../services/service";
+import { useState } from "react";
 
 const investments = [
   {
@@ -40,6 +43,14 @@ const investments = [
 ];
 
 const YourInvestments: FC = () => {
+
+  const [userShares, setUserShares] = useState({})
+  useEffect(() => {
+    mainService.getUserShares().then((data) => {setUserShares(data)})
+  },[])
+
+  console.log(userShares)
+
   return (
     <div
       className="flex flex-col space-y-6 h-full flex-1 bg-zinc-900 text-white p-2 rounded-lg shadow-lg overflow-y-auto"

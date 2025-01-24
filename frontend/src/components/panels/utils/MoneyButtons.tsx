@@ -1,18 +1,29 @@
 import Modal from "../../modals/modal";
-import { useState } from "react";
+import { FC, useState } from "react";
 import WithdrawModalContent from "../../modals/widthrawModelContent";
 import DepositModalContent from "../../modals/depositModelContent";
+import sendRequest from "../../../services/sendRequest";
+import mainService from "../../../services/service";
 
-const MoneyButtons = () => {
+interface MoneyButtonsProps {
+  balance: number;
+  setBalance: (amount: number) => void;
+}
+
+const MoneyButtons: FC<MoneyButtonsProps> = ({setBalance, balance}) => {
   const [activeModal, setActiveModal] = useState<"withdraw" | "deposit" | null>(null);
 
   const handleWithdraw = (amount: number) => {
-    console.log(`Withdrew $${amount}`);
-    setActiveModal(null);
+    if(balance>=amount){
+      mainService.widthrawMoney(amount).then((data) => setBalance(data.balance));
+      setActiveModal(null);
+    } else {
+      alert("Please enter a valid amount.");
+    }
   };
 
   const handleDeposit = (amount: number) => {
-    console.log(`Deposited $${amount}`);
+    mainService.depositMoney(amount).then((data) => setBalance(data.balance));
     setActiveModal(null);
   };
 
