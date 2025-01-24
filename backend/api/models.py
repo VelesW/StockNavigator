@@ -33,11 +33,13 @@ class Portfolio(models.Model):
     user = models.ForeignKey(Shareholder, on_delete=models.CASCADE)
     name = models.CharField(max_length=200)
     share = models.ForeignKey(Shares, on_delete=models.CASCADE)
+    volume = models.PositiveIntegerField(default=0)
     
 class Transactions(models.Model):
     user = models.ForeignKey(Shareholder, on_delete=models.CASCADE)
-    share = models.ForeignKey(Shares, on_delete=models.CASCADE)
+    symbol = models.CharField(max_length=20)
     transaction_type = models.CharField(max_length=4, choices=[('BUY', 'Buy'), ('SELL', 'Sell')])
     quantity = models.PositiveIntegerField()
     price_at_transaction = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(auto_now_add=True)
+    total_cost = models.DecimalField(max_digits=10, decimal_places=2)

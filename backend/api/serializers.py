@@ -25,7 +25,7 @@ class ShareholderSerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
-        fields = ['id', 'user', 'name', 'share']
+        fields = '__all__'
 
 class SharesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,7 +35,7 @@ class SharesSerializer(serializers.ModelSerializer):
 class TransactionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transactions
-        fields = ['id', 'user', 'share', 'transaction_type', 'quantity', 'price_at_transaction', 'date']
+        fields = '__all__'
 
 class DepositSerializer(serializers.Serializer):
     amount = serializers.DecimalField(max_digits=10, decimal_places=2)
