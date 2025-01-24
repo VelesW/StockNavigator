@@ -3,16 +3,37 @@ import { IoClose } from "react-icons/io5";
 import { FaMinus } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa6";
 import axios from "axios";
-import { GlobalQuote, ApiResponse } from "../../interfaces/interfaces.ts";
+import {
+  GlobalQuote,
+  ShareDialogProps,
+  ChartConfig,
+} from "../../interfaces/interfaces.ts";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
 
-interface ShareDialogProps {
-  item: any;
-  onClose: () => void;
-}
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
   const [counter, setCounter] = useState(0);
   const [shareDetails, setShareDetails] = useState<GlobalQuote | null>(null);
+  const [chartConfig, setChartConfig] = useState<ChartConfig | null>(null);
 
   useEffect(() => {
     getShareDetails();
@@ -31,15 +52,75 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
       );
       const globalQuote = res.data["Global Quote"];
       setShareDetails(globalQuote);
-      const price = parseFloat(globalQuote["05. price"]);
-      getChart(price);
+      const config = getChart(globalQuote);
+      setChartConfig(config);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const getChart = (price: number) => {
-    console.log(price);
+  const getChart = (globalQuote: any): ChartConfig => {
+    const high = parseFloat(globalQuote["03. high"]);
+    const low = parseFloat(globalQuote["04. low"]);
+    const price = parseFloat(globalQuote["05. price"]);
+
+    const dataset = Array.from({ length: 7 }, () => {
+      const val = Math.random() * (high - low) + low;
+      return parseFloat(val.toFixed(2));
+    });
+
+    const finalDataset = [
+      parseFloat(low.toFixed(2)),
+      ...dataset,
+      parseFloat(high.toFixed(2)),
+      parseFloat(price.toFixed(2)),
+    ];
+
+    const labels = [
+      "D1",
+      "D2",
+      "D3",
+      "D4",
+      "D5",
+      "D6",
+      "D7",
+      "D8",
+      "D9",
+      "D10",
+    ];
+
+    const data = {
+      labels,
+      datasets: [
+        {
+          label: "",
+          data: finalDataset,
+          borderColor: "rgb(255, 99, 132)",
+          backgroundColor: "rgba(255, 99, 132, 0.5)",
+        },
+      ],
+    };
+
+    const options = {
+      responsive: true,
+      plugins: {},
+      scales: {
+        y: {
+          min: parseFloat(low.toFixed(0)) - 10,
+          max: parseFloat(high.toFixed(0)) + 10,
+          ticks: {
+            color: "#ffffff",
+          },
+        },
+        x: {
+          ticks: {
+            color: "#ffffff",
+          },
+        },
+      },
+    };
+
+    return { data, options };
   };
 
   const handleBgClick = (e: any) => {
@@ -112,10 +193,16 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
               </div>
             </>
           ) : (
-            <div className="text-zinc-500 text-sm">Ładowanie danych...</div>
+            <div className="text-zinc-500 text-sm">Loading Data...</div>
           )}
         </div>
-        <div className="w-full h-48 bg-black mt-4"></div>
+        <div className="w-full bg-zinc-700 mt-4 rounded-lg">
+          {chartConfig && (
+            <div className="w-full">
+              <Line data={chartConfig.data} options={chartConfig.options} />
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,12 @@ export interface GlobalQuote {
   "10. change percent": string;
 }
 
-export interface ApiResponse {
-  "Global Quote": GlobalQuote;
+export interface ShareDialogProps {
+  item: any;
+  onClose: () => void;
+}
+
+export interface ChartConfig {
+  data: any;
+  options: any;
 }

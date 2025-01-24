@@ -37,7 +37,6 @@ const Marketplace = () => {
       const limitedShares = res.data.slice(0, 30);
       setShares(limitedShares);
       setTotalPages(Math.ceil(limitedShares.length / itemsPerPage));
-      console.log(limitedShares);
     } catch (error) {
       console.log(error);
     }
@@ -52,37 +51,6 @@ const Marketplace = () => {
     setSelectedItem(null);
     setIsDialogOpen(false);
   };
-
-  // 01. symbol
-  // :
-  // "IBM"
-  // 02. open
-  // :
-  // "220.5500"
-  // 03. high
-  // :
-  // "223.6600"
-  // 04. low
-  // :
-  // "220.5500"
-  // 05. price
-  // :
-  // "222.6500"
-  // 06. volume
-  // :
-  // "3873578"
-  // 07. latest trading day
-  // :
-  // "2025-01-03"
-  // 08. previous close
-  // :
-  // "219.9400"
-  // 09. change
-  // :
-  // "2.7100"
-  // 10. change percent
-  // :
-  // "1.2322%"
 
   return (
     <div className="w-full flex flex-col">
@@ -158,7 +126,6 @@ const Marketplace = () => {
                 </button>
               ))}
             </span>
-
             <button
               onClick={() => paginate(currentPage + 1)}
               disabled={currentPage === totalPages}
