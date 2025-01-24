@@ -20,6 +20,32 @@ from .serializers import (
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def register(request):
+    """
+    Register a new user.
+    ---
+    description: Register a new user with the provided details.
+    parameters:
+      - name: username
+        in: formData
+        description: Username of the new user
+        required: true
+        type: string
+      - name: email
+        in: formData
+        description: Email of the new user
+        required: true
+        type: string
+      - name: password
+        in: formData
+        description: Password of the new user
+        required: true
+        type: string
+    responses:
+      201:
+        description: User successfully registered.
+      400:
+        description: Bad request, invalid data provided.
+    """
     serializer = RegisterSerializer(data=request.data)
     if serializer.is_valid():
         serializer.save()
@@ -37,16 +63,45 @@ def register(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def refresh(request):
+    """
+    Refresh the access token.
+    ---
+    description: Refresh the access token for the authenticated user.
+    responses:
+      200:
+        description: Access token successfully refreshed.
+    """
     return TokenRefreshView.as_view()(request._request)
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def login(request):
+    """
+    Log in a user.
+    ---
+    description: Log in a user and generate access and refresh tokens.
+    """
     return TokenObtainPairView.as_view()(request._request)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def deposit(request):
+    """
+    Deposit funds into the shareholder's account.
+    ---
+    description: Deposit funds into the shareholder's account.
+    parameters:
+      - name: amount
+        in: formData
+        description: Amount to deposit
+        required: true
+        type: number
+    responses:
+      200:
+        description: Deposit successful.
+      400:
+        description: Bad request, invalid data provided.
+    """
     try:
         shareholder = request.user
     except Shareholder.DoesNotExist:
@@ -64,6 +119,22 @@ def deposit(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def withdrawal(request):
+    """
+    Withdraw funds from the shareholder's account.
+    ---
+    description: Withdraw funds from the shareholder's account.
+    parameters:
+      - name: amount
+        in: formData
+        description: Amount to withdraw
+        required: true
+        type: number
+    responses:
+      200:
+        description: Withdrawal successful.
+      400:
+        description: Bad request, invalid data provided.
+    """
     try:
         shareholder = request.user
     except Shareholder.DoesNotExist:
@@ -82,6 +153,14 @@ def withdrawal(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def shares_list(request):
+    """
+    List all shares available.
+    ---
+    description: Retrieve a list of all available shares.
+    responses:
+      200:
+        description: List of shares successfully retrieved.
+    """
     sharess = Shares.objects.all()
     data = [{'symbol': shares.symbol, 'name': shares.name, 'exchange': shares.exchange, 'asset_type' : shares.asset_type } for shares in sharess]
     return JsonResponse(data, safe=False)
@@ -89,6 +168,22 @@ def shares_list(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def concrete_share(request, symbol):
+    """
+    Retrieve details of a specific share.
+    ---
+    description: Retrieve details of a specific share identified by its symbol.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share
+        required: true
+        type: string
+    responses:
+      200:
+        description: Share details successfully retrieved.
+      404:
+        description: Share not found.
+    """
     try:
         shares = Shares.objects.get(symbol=symbol)
         data = {'symbol': shares.symbol, 'name': shares.name, 'exchange': shares.exchange, 'asset_type' : shares.asset_type }
@@ -99,6 +194,22 @@ def concrete_share(request, symbol):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def share_details(request, symbol):
+    """
+    Retrieve details of a specific share from an external API.
+    ---
+    description: Retrieve details of a specific share identified by its symbol from an external API.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share
+        required: true
+        type: string
+    responses:
+      200:
+        description: Share details successfully retrieved.
+      404:
+        description: Share not found.
+    """
     try:
         shares = Shares.objects.get(symbol=symbol)
         url = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={shares.symbol}&apikey=demo'
@@ -115,6 +226,22 @@ def share_details(request, symbol):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def buy_shares(request, symbol):
+    """
+    Buy shares for the shareholder.
+    ---
+    description: Buy shares for the shareholder identified by the symbol.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share to buy
+        required: true
+        type: string
+    responses:
+      200:
+        description: Shares bought successfully.
+      400:
+        description: Bad request, insufficient balance or shares not found.
+    """
     try:
         shareholder = request.user
         # Fetch current price of the shares from the external API
@@ -163,6 +290,22 @@ def buy_shares(request, symbol):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def sell_shares(request, symbol):
+    """
+    Sell shares for the shareholder.
+    ---
+    description: Sell shares for the shareholder identified by the symbol.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share to sell
+        required: true
+        type: string
+    responses:
+      200:
+        description: Shares sold successfully.
+      400:
+        description: Bad request, insufficient shares in portfolio or shares not found.
+    """
     try:
         shareholder = request.user
         shares = Shares.objects.get(symbol=symbol)
@@ -209,6 +352,22 @@ def sell_shares(request, symbol):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def shares_profit(request, symbol):
+    """
+    Calculate the profit or loss for a shareholder's shares.
+    ---
+    description: Calculate the profit or loss for a shareholder's shares identified by the symbol.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share
+        required: true
+        type: string
+    responses:
+      200:
+        description: Profit or loss calculated successfully.
+      404:
+        description: No transactions found for the symbol.
+    """
     try:
         # Get the user
         user = request.user
@@ -256,6 +415,14 @@ def shares_profit(request, symbol):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def portfolio(request):
+    """
+    Retrieve the portfolio of the authenticated user.
+    ---
+    description: Retrieve the portfolio of the authenticated user.
+    responses:
+      200:
+        description: Portfolio retrieved successfully.
+    """
     user = request.user
     portfolios = Portfolio.objects.filter(user=user)
     serializer = PortfolioSerializer(portfolios, many=True)
@@ -264,6 +431,14 @@ def portfolio(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def transaction_history(request):
+    """
+    Retrieve the transaction history of the authenticated user.
+    ---
+    description: Retrieve the transaction history of the authenticated user.
+    responses:
+      200:
+        description: Transaction history retrieved successfully.
+    """
     user = request.user
     transactions = Transactions.objects.filter(user=user)
     serializer = TransactionsSerializer(transactions, many=True)
@@ -272,6 +447,14 @@ def transaction_history(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def update_profile(request):
+    """
+    Update the profile details of the authenticated user.
+    ---
+    description: Update the profile details of the authenticated user.
+    responses:
+      200:
+        description: Profile updated successfully.
+    """
     shareholder = get_object_or_404(Shareholder, id=request.user.id)
 
     data = request.data
@@ -286,6 +469,14 @@ def update_profile(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def user_list(request):
+    """
+    Retrieve a list of all users.
+    ---
+    description: Retrieve a list of all users with their basic information.
+    responses:
+      200:
+        description: User list retrieved successfully.
+    """
     users = Shareholder.objects.all()
     user_data = [{'id' : user.id, 'username' : user.username, 'email' : user.email } for user in users ]
 
@@ -294,6 +485,22 @@ def user_list(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def shares_price_history(request, symbol):
+    """
+    Retrieve the price history of a share identified by the symbol.
+    ---
+    description: Retrieve the price history of a share identified by the symbol.
+    parameters:
+      - name: symbol
+        in: path
+        description: Symbol of the share
+        required: true
+        type: string
+    responses:
+      200:
+        description: Price history retrieved successfully.
+      404:
+        description: Shares not found or error fetching data from external API.
+    """
     try:
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol={symbol}&apikey=demo"
         r = requests.get(url)
@@ -309,15 +516,23 @@ def shares_price_history(request, symbol):
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def profile_details(request):
-        shareholder = get_object_or_404(Shareholder, id=request.user.id)
+    """
+    Retrieve the profile details of the authenticated user.
+    ---
+    description: Retrieve the profile details of the authenticated user.
+    responses:
+      200:
+        description: Profile details retrieved successfully.
+    """
+    shareholder = get_object_or_404(Shareholder, id=request.user.id)
+
+    response_data = {
+        'id': shareholder.id,
+        'username': shareholder.username,
+        'first_name': shareholder.first_name,
+        'last_name': shareholder.last_name,
+        'email': shareholder.email,
+        'balance': shareholder.balance
+    }
     
-        response_data = {
-            'id': shareholder.id,
-            'username': shareholder.username,
-            'first_name': shareholder.first_name,
-            'last_name': shareholder.last_name,
-            'email': shareholder.email,
-            'balance': shareholder.balance
-        }
-        
-        return JsonResponse(response_data)
+    return JsonResponse(response_data)
