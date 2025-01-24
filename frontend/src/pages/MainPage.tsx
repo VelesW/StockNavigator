@@ -1,6 +1,5 @@
 import Marketplace from "../components/marketplace/Marketplace";
 import LeftPanel from "../components/panels/main-components/LeftPanel";
-import { useState } from "react";
 
 const MainPage = () => {
   return (
