@@ -8,13 +8,14 @@ import ShareDialog from "./ShareDialog";
 import Modal from "../modals/modal";
 import UserForm from "../modals/UserModal";
 import mainService from "../../services/service";
-import { baseUser, UserDetails} from "../panels/main-components/LeftPanel";
+import { baseUser, UserDetails } from "../panels/main-components/LeftPanel";
 import { useNavigate } from "react-router-dom";
 import { PanelsProps } from "../../pages/MainPage";
+import HistoryModal from "../modals/historyModal";
 
-const Marketplace: FC<PanelsProps> = ({userDetails, setUserDetails}) => {
+const Marketplace: FC<PanelsProps> = ({ userDetails, setUserDetails }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const naviagte = useNavigate()
+  const naviagte = useNavigate();
   const itemsPerPage = 8;
   const [shares, setShares] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -23,28 +24,34 @@ const Marketplace: FC<PanelsProps> = ({userDetails, setUserDetails}) => {
   const currentItems = shares.slice(indexOfFirstItem, indexOfLastItem);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [isUserModalActive, setIsUserModalActive] = useState<boolean>(false)
+  const [isUserModalActive, setIsUserModalActive] = useState<boolean>(false);
+  const [isHistoryModalActive, setIsHistoryModalActive] = useState(false);
+
   const onClose = () => {
-    setIsUserModalActive(false)
-  }
+    setIsUserModalActive(false);
+  };
+
+  const onHistoryClose = () => {
+    setIsHistoryModalActive(false);
+  };
 
   const logout = () => {
-    sessionStorage.clear()
-    naviagte("/")
-  }
-  
+    sessionStorage.clear();
+    naviagte("/");
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       const data = await mainService.getUserData();
-      
+
       if (JSON.stringify(data) !== JSON.stringify(userDetails)) {
         setUserDetails(data);
       }
     };
-  
+
     fetchUserData();
   }, [userDetails]);
-  
+
   useEffect(() => {
     getItems();
   }, []);
@@ -94,13 +101,22 @@ const Marketplace: FC<PanelsProps> = ({userDetails, setUserDetails}) => {
             <FaSearch className="absolute top-[6px] text-zinc-500 right-10" />
           </div>
         </div>
-        <a href="/" className="text-sm text-white font-semibold">
-          Marketplace
-        </a>
-        <button className="text-sm text-white font-semibold" onClick={() => setIsUserModalActive(true)}>
+        <button
+          className="text-sm text-white font-semibold"
+          onClick={() => setIsUserModalActive(true)}
+        >
           Profile
         </button>
-        <button className="text-sm text-white font-semibold" onClick={() => logout()}>
+        <button
+          className="text-sm text-white font-semibold"
+          onClick={() => setIsHistoryModalActive(true)}
+        >
+          History
+        </button>
+        <button
+          className="text-sm text-white font-semibold"
+          onClick={() => logout()}
+        >
           Logout
         </button>
       </div>
@@ -171,12 +187,17 @@ const Marketplace: FC<PanelsProps> = ({userDetails, setUserDetails}) => {
           </div>
         </div>
       </div>
+      {isHistoryModalActive && <HistoryModal onClose={onHistoryClose} />}
       {isDialogOpen && (
         <ShareDialog item={selectedItem} onClose={closeDialog} />
       )}
       {isUserModalActive && (
         <Modal isOpen={isUserModalActive} onClose={onClose}>
-          <UserForm userDetails={userDetails} setUserDetails={setUserDetails} onClose={onClose} />
+          <UserForm
+            userDetails={userDetails}
+            setUserDetails={setUserDetails}
+            onClose={onClose}
+          />
         </Modal>
       )}
     </div>

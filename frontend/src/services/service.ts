@@ -25,6 +25,14 @@ class MainService {
     };
     return sendRequest(path, method, requestBody);
   }
+
+  getUserHistory() {
+    const path = "api/portfolio/history/";
+    const method = "GET";
+
+    return sendRequest(path, method);
+  }
+
   editUserData(userDetails: UserDetails) {
     const path = "api/profile/update/";
     const method = "POST";

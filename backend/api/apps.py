@@ -7,7 +7,7 @@ class ApiConfig(AppConfig):
 
     def ready(self):
         # WARNING: Disable fetch for developement
-        from .fetch_shares import fetch_and_store_stock_data
-        post_migrate.connect(fetch_and_store_stock_data)
+        # from .fetch_shares import fetch_and_store_stock_data
+        # post_migrate.connect(fetch_and_store_stock_data)
         pass
 
