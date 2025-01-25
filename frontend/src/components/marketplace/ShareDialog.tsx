@@ -7,7 +7,6 @@ import {
   GlobalQuote,
   ShareDialogProps,
   ChartConfig,
-  UserDetails,
 } from "../../interfaces/interfaces.ts";
 import {
   Chart as ChartJS,
@@ -31,15 +30,6 @@ ChartJS.register(
   Legend
 );
 
-const baseUser: UserDetails = {
-  balance: 0,
-  email: "",
-  first_name: "",
-  id: 0,
-  last_name: "",
-  username: "",
-};
-
 interface BuyShareResponse {
   success: boolean;
   total_cost: number;
@@ -49,20 +39,6 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
   const [counter, setCounter] = useState(0);
   const [shareDetails, setShareDetails] = useState<GlobalQuote | null>(null);
   const [chartConfig, setChartConfig] = useState<ChartConfig | null>(null);
-  const [userDetails, setUserDetails] = useState<UserDetails>(baseUser);
-  const [balance, setBalance] = useState<number>(baseUser.balance);
-
-  useEffect(() => {
-    mainService
-      .getUserData()
-      .then((data) => {
-        setUserDetails(data);
-        setBalance(data.balance);
-      })
-      .catch((err) => {
-        console.error("Error fetching user data:", err);
-      });
-  }, []);
 
   useEffect(() => {
     getShareDetails();

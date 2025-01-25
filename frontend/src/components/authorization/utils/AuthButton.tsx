@@ -1,21 +1,20 @@
-import { FC } from "react"
+import { FC } from "react";
 
 interface AuthButtonProps {
-    action: string
-    handleClick: () => void;
+  action: string;
+  handleClick: () => void;
 }
 
-const AuthButton: FC<AuthButtonProps> = ({action, handleClick}) => {
-    return (
-        <div 
-            className="pt-0.5 pb-1 pl-7 pr-7 border-2 border-main-text mt-2 font-bold mb-2 mt-2 rounded-md 
+const AuthButton: FC<AuthButtonProps> = ({ action, handleClick }) => {
+  return (
+    <div
+      className="pt-0.5 pb-1 pl-7 pr-7 border-2 border-main-text mt-2 font-bold mb-2 rounded-md 
                         cursor-pointer transition-all transform hover:-translate-y-1 hover:ease-in-out duration-700 hover:bg-zinc-700"
-            onClick={handleClick}
-        >
-            {action}
-        </div>
-        
-    )
-}
+      onClick={handleClick}
+    >
+      {action}
+    </div>
+  );
+};
 
-export default AuthButton
+export default AuthButton;

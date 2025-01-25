@@ -9,85 +9,83 @@ import SwitchAuthOption from "../utils/SwitchAuthOption";
 import AuthResponse from "../utils/AuthResponse";
 
 interface Response {
-    text: string;
-    color: string;
+  text: string;
+  color: string;
 }
 
 const LoginForm: FC = () => {
-    const [username, setUsername] = useState<string>("");
-    const [password, setPassword] = useState<string>("");
-    const [response, setResponse] = useState<Response>({ text: "", color: "" });
-    const [responseIsVisible, setResponseIsVisible] = useState<boolean>(false);
-    const navigate = useNavigate();
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [response, setResponse] = useState<Response>({ text: "", color: "" });
+  const [responseIsVisible, setResponseIsVisible] = useState<boolean>(false);
+  const navigate = useNavigate();
 
-    const updateResponse = (text: string, color: string) => {
-        setResponse({ text, color });
-        setResponseIsVisible(true);
-        setTimeout(() => setResponseIsVisible(false), 3000);
-    };
+  const updateResponse = (text: string, color: string) => {
+    setResponse({ text, color });
+    setResponseIsVisible(true);
+    setTimeout(() => setResponseIsVisible(false), 3000);
+  };
 
-    const handleLogin = async () => {
-        // updateResponse("","");
+  const handleLogin = async () => {
+    if (!username || !password) {
+      updateResponse("Please fill all fields!", "bg-red-300");
+      return;
+    }
 
-        if (!username || !password) {
-            updateResponse("Please fill all fields!", "bg-red-300");
-            return;
+    try {
+      const result = await axios.post(
+        "http://localhost:8000/api/login/",
+        {
+          username: username.trim(),
+          password,
+        },
+        {
+          headers: { "Content-Type": "application/json" },
         }
+      );
+      sessionStorage.setItem("access_token", result.data.access);
+      sessionStorage.setItem("userId", result.data.id);
+      navigate("/main");
+    } catch (error) {
+      updateResponse("Bad credentials!", "bg-red-300");
+    }
+  };
 
-        try {
-            const result = await axios.post("http://localhost:8000/api/login/", {
-                username: username.trim(),
-                password
-            }, {
-                headers: { "Content-Type": "application/json" }
-            });
-            sessionStorage.setItem("access_token", result.data.access);
-            sessionStorage.setItem("userId", result.data.id)
-            navigate("/main");
+  return (
+    <form className="rounded-lg w-72 h-96 bg-main-gray text-main-text shadow-[6px_6px_20px_3px_rgba(0,0,0,0.7)] p-5 flex flex-col justify-center items-center font-exo">
+      <AuthHeader text="Sign in" />
+      <AuthInput
+        type="text"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="Username"
+        icon={<FaUser />}
+      />
+      <AuthInput
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        icon={<FaLock />}
+      />
 
-        } catch (error) {
-            updateResponse("Bad credentials!", "bg-red-300");
-        }
-    };
+      {responseIsVisible && (
+        <AuthResponse
+          text={response.text}
+          color={response.color}
+          isVisible={responseIsVisible}
+        />
+      )}
 
-    return (
-        <form className="rounded-lg w-72 h-96 bg-main-gray text-main-text shadow-[6px_6px_20px_3px_rgba(0,0,0,0.7)] p-5 flex flex-col justify-center items-center font-exo">
-            <AuthHeader text="Sign in" />
-            <AuthInput
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                icon={<FaUser />}
-            />
-            <AuthInput
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-                icon={<FaLock />}
-            />
+      <AuthButton action="LOGIN" handleClick={handleLogin} />
 
-            {responseIsVisible && (
-                <AuthResponse
-                    text={response.text}
-                    color={response.color}
-                    isVisible={responseIsVisible}
-                />
-            )}
-
-            <AuthButton
-                action="LOGIN"
-                handleClick={handleLogin}
-            />
-
-            <SwitchAuthOption
-                text="Don't have an account?"
-                linkName="Sign up"
-                path="/register"
-            />
-        </form>
-    );
+      <SwitchAuthOption
+        text="Don't have an account?"
+        linkName="Sign up"
+        path="/register"
+      />
+    </form>
+  );
 };
 
 export default LoginForm;
