@@ -4,9 +4,14 @@ on:
   push:
     branches:
       - main
+      - CI/CD
+      - develop
+
   pull_request:
     branches:
       - main
+      - CI/CD
+      - develop
 
 jobs:
   backend:
@@ -30,27 +35,27 @@ jobs:
           cd backend
           python manage.py test
 
-  frontend:
-    runs-on: ubuntu-latest
-    needs: backend
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   needs: backend
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v2
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
+  #     - name: Set up Node.js
+  #       uses: actions/setup-node@v2
+  #       with:
+  #         node-version: '18'
 
-      - name: Install dependencies
-        run: |
-          cd frontend
-          npm install
+  #     - name: Install dependencies
+  #       run: |
+  #         cd frontend
+  #         npm install
 
-      - name: Build the project
-        run: |
-          cd frontend
-          npm run build
+  #     - name: Build the project
+  #       run: |
+  #         cd frontend
+  #         npm run build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@v1.1.0
@@ -58,5 +63,6 @@ jobs:
           publish-dir: frontend/dist
           production-deploy: true
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          netlify-token: ${{ secrets.NETLIFY_TOKEN }}
-          site-id: ${{ secrets.NETLIFY_SITE_ID }}
+          # netlify-token: ${{ secrets.NETLIFY_TOKEN }}
+          # site-id: ${{ secrets.NETLIFY_SITE_ID }}
+          
