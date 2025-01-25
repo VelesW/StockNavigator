@@ -16,6 +16,7 @@ from .serializers import (
     RegisterSerializer, PortfolioSerializer, RegisterSerializer, ShareholderSerializer,
      SharesSerializer, TransactionsSerializer, DepositSerializer, WithdrawSerializer
 )
+from drf_yasg import openapi
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -24,22 +25,19 @@ def register(request):
     Register a new user.
     ---
     description: Register a new user with the provided details.
-    parameters:
-      - name: username
-        in: formData
-        description: Username of the new user
-        required: true
-        type: string
-      - name: email
-        in: formData
-        description: Email of the new user
-        required: true
-        type: string
-      - name: password
-        in: formData
-        description: Password of the new user
-        required: true
-        type: string
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              email:
+                type: string
+              password:
+                type: string
     responses:
       201:
         description: User successfully registered.
@@ -90,12 +88,16 @@ def deposit(request):
     Deposit funds into the shareholder's account.
     ---
     description: Deposit funds into the shareholder's account.
-    parameters:
-      - name: amount
-        in: formData
-        description: Amount to deposit
+    path:
+        requestBody:
         required: true
-        type: number
+        content:
+            application/json:
+            schema:
+                type: object
+                properties:
+                amount:
+                    type: number
     responses:
       200:
         description: Deposit successful.
@@ -255,6 +257,9 @@ def buy_shares(request, symbol):
         
         # Get the amount to buy from the request data
         amount_to_buy = request.data.get('amount', 0)
+        if amount_to_buy <= 0:
+            return JsonResponse({'error': 'Shares amount needs to be positive integer'}, status=400)
+        
         total_cost = Decimal(current_price) * Decimal(amount_to_buy)
         
         # Check if the shareholder has enough balance
@@ -311,6 +316,8 @@ def sell_shares(request, symbol):
         shares = Shares.objects.get(symbol=symbol)
         
         amount_to_sell = request.data.get('amount', 0)
+        if amount_to_sell <= 0:
+            return JsonResponse({'error': 'Shares amount needs to be positive integer'}, status=400)
         portfolio = Portfolio.objects.get(user=shareholder, share=shares)
         
         if portfolio.volume >= amount_to_sell:
