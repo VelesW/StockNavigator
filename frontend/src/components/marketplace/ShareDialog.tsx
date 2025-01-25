@@ -134,18 +134,18 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
     }
   };
 
-  const buySingleShare = (amount: number, symbol: string) => {
+  const buySingleShare = (amount: number) => {
     mainService
-      .buyShare(symbol, amount)
+      .buyShare(amount)
       .then((data: BuyShareResponse) => {
         console.log(data);
       })
       .catch((err) => console.log(err));
   };
 
-  const sellShare = (amount: number, symbol: string) => {
+  const sellShare = (amount: number) => {
     mainService
-      .sellShare(symbol, amount)
+      .sellShare(amount)
       .then((data: BuyShareResponse) => {
         console.log(data);
       })
@@ -171,7 +171,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
         <div className="flex flex-row gap-4 mt-4 items-center">
           <button
             className="px-8 py-1 text-zinc-200 text-sm border-[1px] border-zinc-500 rounded-lg font-semibold"
-            onClick={() => buySingleShare(counter, item.symbol)}
+            onClick={() => buySingleShare(counter)}
           >
             BUY
           </button>
@@ -194,7 +194,7 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
           </div>
           <button
             className="px-8 py-1 text-white bg-emerald-500 text-sm border-[1px] border-emerald-500 rounded-lg font-semibold"
-            onClick={() => sellShare(counter, item.symbol)}
+            onClick={() => sellShare(counter)}
           >
             SELL
           </button>

@@ -45,7 +45,7 @@ class MainService {
     return sendRequest(path, method, requestBody);
   }
 
-  sellShare(symbol: string, amount: number) {
+  sellShare(amount: number) {
     const path = `api/shares/IBM/sell/`;
     const method = "POST";
     const requestBody = {
@@ -54,7 +54,7 @@ class MainService {
     return sendRequest(path, method, requestBody);
   }
 
-  buyShare(symbol: string, amount: number) {
+  buyShare(amount: number) {
     const path = `api/shares/IBM/buy/`;
     const method = "POST";
     const requestBody = {
