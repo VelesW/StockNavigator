@@ -7,4 +7,4 @@ python-dotenv
 django-cors-headers
 alpha_vantage
 django-oauth-toolkit
-
+drf-yasg
