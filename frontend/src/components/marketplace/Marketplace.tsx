@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useState, useEffect, useMemo, FC } from "react";
+import { useState, useEffect, FC } from "react";
 import { FaSearch } from "react-icons/fa";
 import { FaChevronLeft } from "react-icons/fa";
 import { FaChevronRight } from "react-icons/fa";
@@ -8,10 +8,9 @@ import ShareDialog from "./ShareDialog";
 import Modal from "../modals/modal";
 import UserForm from "../modals/UserModal";
 import mainService from "../../services/service";
-import { baseUser, UserDetails } from "../panels/main-components/LeftPanel";
 import { useNavigate } from "react-router-dom";
 import { PanelsProps } from "../../pages/MainPage";
-import HistoryModal from "../modals/historyModal";
+import HistoryModal from "../modals/HistoryModal";
 
 const Marketplace: FC<PanelsProps> = ({ userDetails, setUserDetails }) => {
   const [currentPage, setCurrentPage] = useState(1);

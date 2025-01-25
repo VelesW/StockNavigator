@@ -34,10 +34,10 @@ const HistoryModal: FC<HistoryModalProps> = ({ onClose }) => {
       onClick={handleBgClick}
     >
       <div className="bg-zinc-800 ring-1 ring-inset ring-gray-500/50 rounded-xl shadow-xl w-[600px] max-w-[95%] p-6 relative flex flex-col">
-        <h1 className="w-full text-center text-white font-semibold text-lg">
+        <h1 className="w-full text-center text-white font-semibold text-lg mb-4">
           History
         </h1>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-4">
           {historyShares.map((item: any, i) => (
             <HistoryShare
               key={i}
