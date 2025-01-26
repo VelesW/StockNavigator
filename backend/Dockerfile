@@ -21,7 +21,7 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 8000
 
-# # Command to run the application locally
-# CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Command to run the application locally
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
 
-CMD gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+# CMD gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
