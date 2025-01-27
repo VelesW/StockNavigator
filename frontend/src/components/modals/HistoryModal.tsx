@@ -14,6 +14,7 @@ const HistoryModal: FC<HistoryModalProps> = ({ onClose }) => {
       .getUserHistory()
       .then((data) => {
         console.log(data);
+        data.reverse();
         const limitedShares = data.slice(0, 5);
         setHistoryShares(limitedShares);
       })

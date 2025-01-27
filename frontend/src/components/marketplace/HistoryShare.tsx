@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 interface HistoryShareProps {
   date: any;
@@ -17,10 +17,30 @@ const HistoryShare: FC<HistoryShareProps> = ({
   totalCost,
   transactionType,
 }) => {
+  const [hour, setHour] = useState<any>();
+  const [opeartionDate, setOpeartionDate] = useState<any>();
+
+  useEffect(() => {
+    const newDate = new Date(date);
+
+    const padZero = (number: number) => number.toString().padStart(2, "0");
+
+    const year = newDate.getUTCFullYear();
+    const month = padZero(newDate.getUTCMonth() + 1);
+    const day = padZero(newDate.getUTCDate());
+    setOpeartionDate(`${year}-${month}-${day}`);
+
+    const hours = padZero(newDate.getUTCHours());
+    const minutes = padZero(newDate.getUTCMinutes());
+    setHour(`${hours}:${minutes}`);
+  }, []);
+
   return (
     <div className="w-full py-2 px-4 rounded-lg bg-zinc-900 flex flex-col gap-3">
       <div className="w-full flex flex-row gap-3 items-center">
-        <span className="text-zinc-600 text-sm">{date}</span>
+        <span className="text-zinc-600 text-sm">
+          {opeartionDate} {hour}
+        </span>
         <span className="text-white text-sm font-semibold">
           {transactionType}
         </span>

@@ -141,6 +141,8 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
         console.log(data);
       })
       .catch((err) => console.log(err));
+
+    window.location.reload();
   };
 
   const sellShare = (amount: number) => {
@@ -150,6 +152,8 @@ const ShareDialog: React.FC<ShareDialogProps> = ({ item, onClose }) => {
         console.log(data);
       })
       .catch((err) => console.log(err));
+
+    window.location.reload();
   };
 
   return (
