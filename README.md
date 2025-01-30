@@ -84,3 +84,8 @@ This project is licensed under the MIT License.
 ## Contact  
 
 For inquiries or feedback, please reach out at [your-email@example.com](mailto:your-email@example.com).  
+
+## 🎨 Projekt Figma
+
+[🔗 Zobacz projekt na Figma](https://www.figma.com/design/jox0E94V6F9NZbkCjNkZSj/Vertulio_app?node-id=0-1&t=fKL1Rr0a13l6GSAG-1)
+
